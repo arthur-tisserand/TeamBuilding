@@ -1,0 +1,343 @@
+/* =========================================================
+   Le baba de minuit – Enquête dans Nancy
+   Palette : bleu de nuit + or des grilles de la place Stanislas
+   ========================================================= */
+
+:root {
+  --nuit:      #0f1e33;   /* fond principal */
+  --nuit-2:    #172a45;   /* surfaces */
+  --nuit-3:    #223a5c;   /* bordures, rues */
+  --or:        #d4a94a;   /* or Jean Lamour */
+  --or-clair:  #f0d58a;
+  --pierre:    #ece4d0;   /* texte, pierre de Lorraine */
+  --pierre-2:  #b9b2a0;   /* texte secondaire */
+  --sang:      #c4413a;   /* mystère / alerte */
+  --parc:      #27563f;
+  --eau:       #1e5878;
+  --ok:        #7fbf8e;
+
+  --serif: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --sans:  "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --radius: 6px;
+  --gap: 1rem;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--nuit);
+  color: var(--pierre);
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+}
+
+h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.15; margin: 0; }
+p { margin: 0; }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+:focus-visible { outline: 3px solid var(--or-clair); outline-offset: 3px; }
+
+/* ---------- En-tête ---------- */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between; gap: var(--gap);
+  padding: .75rem 1rem;
+  background: var(--nuit);
+  border-bottom: 1px solid var(--nuit-3);
+}
+.brand h1 { font-size: 1.35rem; color: var(--or); letter-spacing: .01em; }
+.brand p  { font-size: .85rem; color: var(--pierre-2); }
+
+.progress { min-width: 7.5rem; text-align: right; }
+.progress-text { font-size: .8rem; color: var(--pierre-2); }
+.progress-track {
+  height: 6px; margin-top: .3rem;
+  background: var(--nuit-3); border-radius: 3px; overflow: hidden;
+}
+.progress-bar {
+  height: 100%; width: 0;
+  background: var(--or);
+  transition: width .6s ease;
+}
+
+/* ---------- Mise en page ---------- */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap);
+  padding: var(--gap);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; padding: 1.5rem; gap: 1.5rem; }
+  .map-panel { position: sticky; top: 5rem; }
+}
+
+/* ---------- Carte ---------- */
+.map-frame {
+  position: relative;
+  background: #0b172a;
+  border: 1px solid var(--nuit-3);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+#map { display: block; width: 100%; height: auto; max-height: 78vh; }
+
+.map-note { margin-top: .5rem; font-size: .8rem; color: var(--pierre-2); }
+
+.btn-map {
+  position: absolute; top: .6rem; right: .6rem;
+  font: 500 .85rem var(--sans);
+  color: var(--pierre); background: rgba(15, 30, 51, .92);
+  border: 1px solid var(--or); border-radius: 999px;
+  padding: .4rem .9rem; cursor: pointer;
+}
+.btn-map:hover { background: var(--nuit-3); }
+
+.gps-status {
+  position: absolute; left: .6rem; bottom: .6rem;
+  font-size: .78rem;
+  background: rgba(15, 30, 51, .92);
+  border: 1px solid var(--nuit-3);
+  border-radius: 999px; padding: .25rem .7rem;
+  color: var(--pierre-2);
+}
+.gps-status.is-on  { color: var(--ok); border-color: var(--ok); }
+.gps-status.is-off { color: var(--sang); border-color: var(--sang); }
+
+/* Éléments SVG de la carte */
+.m-water  { fill: none; stroke: var(--eau); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; opacity: .85; }
+.m-park   { fill: var(--parc); opacity: .85; }
+.m-street { fill: none; stroke: var(--nuit-3); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.m-street.major { stroke: #35527a; stroke-width: 5; }
+.m-square { fill: #2c4566; stroke: #46648d; stroke-width: 1.5; }
+.m-rail   { fill: none; stroke: #35527a; stroke-width: 3; stroke-dasharray: 8 5; }
+.m-label  { fill: #6d86a8; font: italic 500 13px var(--serif); }
+.m-compass { fill: none; stroke: var(--pierre-2); stroke-width: 1.5; }
+.m-compass-text { fill: var(--pierre-2); font: 600 12px var(--sans); text-anchor: middle; }
+
+.m-route {
+  fill: none; stroke: var(--or); stroke-width: 3;
+  stroke-dasharray: 3 8; stroke-linecap: round; opacity: .9;
+}
+.m-route-next { stroke: var(--sang); }
+
+.m-pin-bg   { fill: var(--nuit); stroke: var(--or); stroke-width: 3; }
+.m-pin-done .m-pin-bg { fill: var(--or); }
+.m-pin-num  { fill: var(--nuit); font: 700 15px var(--sans); text-anchor: middle; dominant-baseline: central; }
+.m-pin-next .m-pin-bg  { stroke: var(--sang); fill: var(--nuit); }
+.m-pin-next .m-pin-num { fill: var(--sang); font-size: 18px; }
+.m-pin-label {
+  fill: var(--pierre); font: 600 13px var(--sans); text-anchor: middle;
+  paint-order: stroke; stroke: #0b172a; stroke-width: 4px; stroke-linejoin: round;
+}
+.m-pulse { fill: none; stroke: var(--sang); stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: pulse 2s ease-out infinite; }
+@keyframes pulse {
+  0%   { transform: scale(.8); opacity: .9; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+.m-pin-appear { animation: pin-in .6s cubic-bezier(.2, 1.4, .4, 1) both; transform-box: fill-box; transform-origin: center; }
+@keyframes pin-in {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.m-user-dot   { fill: #4aa3ff; stroke: #fff; stroke-width: 3; }
+.m-user-ring  { fill: rgba(74, 163, 255, .18); stroke: rgba(74, 163, 255, .6); stroke-width: 1.5; }
+
+/* ---------- Colonne droite ---------- */
+.side { display: grid; gap: var(--gap); }
+
+.mission {
+  background: var(--nuit-2);
+  border: 1px solid var(--nuit-3);
+  border-left: 4px solid var(--sang);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.1rem 1.25rem;
+}
+.mission[hidden], .finale[hidden] { display: none; }
+.finale { border-left-color: var(--or); }
+
+.mission-step  { font-size: .85rem; color: var(--sang); font-weight: 600; margin-bottom: .35rem; }
+.mission-title { font-size: 1.5rem; color: var(--pierre); }
+.mission-hint  { margin-top: .6rem; font-size: 1.05rem; max-width: 60ch; }
+
+.capture { margin-top: 1rem; display: grid; gap: .75rem; justify-items: start; }
+
+/* ---------- Boutons ---------- */
+.btn {
+  display: inline-block;
+  font: 600 1rem var(--sans);
+  text-align: center;
+  padding: .75rem 1.2rem;
+  border-radius: var(--radius);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background-color .2s, transform .1s;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: transparent; color: var(--or-clair); border-color: var(--or); }
+.btn-primary:hover { background: rgba(212, 169, 74, .12); }
+.btn-gold { background: var(--or); color: var(--nuit); }
+.btn-gold:hover { background: var(--or-clair); }
+.btn[disabled], .btn-gold:disabled {
+  background: var(--nuit-3); color: var(--pierre-2); cursor: not-allowed; border-color: transparent;
+}
+
+.preview { margin: 0; }
+.preview img {
+  display: block; width: 100%; max-width: 320px; max-height: 240px; object-fit: cover;
+  border: 3px solid var(--or-clair); border-radius: 3px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .4);
+  transform: rotate(-1.2deg);
+}
+.preview figcaption { margin-top: .4rem; font-size: .8rem; color: var(--pierre-2); }
+
+.feedback { min-height: 1.4em; font-size: .95rem; }
+.feedback.is-error { color: #ff8f88; }
+.feedback.is-ok    { color: var(--ok); }
+
+/* ---------- Carnet d'enquête ---------- */
+.notebook {
+  background: var(--nuit-2);
+  border: 1px solid var(--nuit-3);
+  border-radius: var(--radius);
+  padding: 1.1rem;
+}
+.notebook h2 { font-size: 1.25rem; color: var(--or); margin-bottom: .75rem; }
+
+.clue-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .9rem; }
+.clue-empty { color: var(--pierre-2); font-size: .95rem; }
+
+.clue {
+  display: grid; grid-template-columns: 76px 1fr; gap: .8rem;
+  padding-top: .9rem; border-top: 1px solid var(--nuit-3);
+}
+.clue:first-child { border-top: 0; padding-top: 0; }
+.clue img {
+  width: 76px; height: 76px; object-fit: cover;
+  border: 2px solid var(--or-clair); border-radius: 2px;
+}
+.clue h3 { margin: 0; font: 700 1.05rem var(--serif); color: var(--pierre); }
+.clue .place { font-size: .8rem; color: var(--or); }
+.clue p.text { margin-top: .25rem; font-size: .95rem; }
+
+.foot {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+  font-size: .85rem; color: var(--pierre-2); padding-bottom: 1rem;
+}
+.badge { border: 1px solid var(--sang); color: #ff8f88; border-radius: 999px; padding: .15rem .7rem; }
+.link-btn {
+  background: none; border: 0; color: var(--pierre-2); text-decoration: underline;
+  font: inherit; cursor: pointer; padding: .25rem;
+}
+.link-btn:hover { color: var(--pierre); }
+
+/* ---------- Finale : suspects ---------- */
+.suspects { border: 0; padding: 0; margin: 1rem 0; display: grid; gap: .5rem; }
+.suspect {
+  display: flex; align-items: center; gap: .7rem;
+  background: var(--nuit); border: 2px solid var(--nuit-3);
+  border-radius: var(--radius); padding: .7rem .9rem; cursor: pointer;
+}
+.suspect:hover { border-color: var(--or); }
+.suspect input { accent-color: var(--or); width: 1.1rem; height: 1.1rem; }
+.suspect:has(input:checked) { border-color: var(--or); background: rgba(212, 169, 74, .1); }
+.suspect strong { font-family: var(--serif); font-size: 1.05rem; }
+.suspect small { display: block; color: var(--pierre-2); }
+
+/* ---------- Boîtes de dialogue ---------- */
+.dialog {
+  width: min(92vw, 30rem);
+  padding: 1.6rem;
+  background: var(--nuit-2); color: var(--pierre);
+  border: 2px solid var(--or); border-radius: var(--radius);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
+}
+.dialog::backdrop { background: rgba(5, 10, 20, .8); }
+.dialog h2 { font-size: 1.8rem; color: var(--or); margin-bottom: .8rem; }
+.dialog p + p { margin-top: .7rem; }
+.dialog .lead { font-size: 1.1rem; }
+.dialog .btn { margin-top: 1.2rem; width: 100%; }
+.dialog[open] { animation: dialog-in .35s ease-out; }
+@keyframes dialog-in {
+  from { transform: translateY(14px) scale(.97); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+
+.field-label { display: block; margin-top: 1.2rem; font-weight: 600; }
+.dialog input[type="text"] {
+  width: 100%; margin-top: .35rem; padding: .7rem .8rem;
+  font: 1rem var(--sans); color: var(--pierre);
+  background: var(--nuit); border: 2px solid var(--nuit-3); border-radius: var(--radius);
+}
+.dialog input[type="text"]:focus { border-color: var(--or); outline: none; }
+
+.dialog-clue { border-color: var(--sang); }
+.dialog-clue h2 { color: var(--pierre); }
+.next-hint {
+  border-left: 3px solid var(--or); padding-left: .8rem;
+  color: var(--or-clair); font-size: .95rem;
+}
+
+/* ---------- Accessibilité / mouvement réduit ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* =========================================================
+   Ajouts : deux équipes, quiz, indices variés, outil organisateur
+   ========================================================= */
+.distance { margin-top: .5rem; font-size: .9rem; color: var(--pierre-2); min-height: 1.2em; }
+
+/* choix d'équipe et questions du quiz : mêmes cartes que les choix */
+.team-choice { margin: 1.2rem 0 0; }
+.team-choice .field-label { margin-top: 0; padding: 0; }
+.quiz-form { margin-top: 1rem; display: grid; gap: .5rem; }
+.quiz-q { margin: 0 0 1rem; }
+.quiz-q legend { font-weight: 600; padding: 0; margin-bottom: .5rem; }
+.quiz-form .btn { justify-self: start; }
+
+/* contenu d'un indice */
+.clue-body { display: grid; gap: .8rem; }
+.clue-body .text, .clue .text { font-size: 1.1rem; }
+.clue-code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 1.05rem; letter-spacing: .06em; overflow-wrap: anywhere;
+  padding: .7rem .9rem; background: var(--nuit);
+  border-left: 3px solid var(--or); border-radius: 2px;
+}
+.clue-img { display: block; width: min(11rem, 60%); height: auto; margin: 0 auto; border: 0; }
+.dialog .clue-body { margin-bottom: 1rem; }
+
+/* indices du carnet sans photo (quiz) et avec image (blason) */
+.clue.no-photo { grid-template-columns: 1fr; }
+.clue .clue-img { width: 5.5rem; height: auto; margin: .5rem 0 0; border: 0; object-fit: contain; }
+.clue .clue-code { font-size: .9rem; margin-top: .3rem; }
+
+/* outil de relevé GPS (?calibrer=1) */
+.calib {
+  background: var(--nuit-2); border: 1px dashed var(--or);
+  border-radius: var(--radius); padding: 1rem;
+}
+.calib[hidden] { display: none; }
+.calib h2 { font-size: 1.1rem; color: var(--or); margin-bottom: .4rem; }
+.calib p { font-size: .9rem; }
+.calib .btn { margin-top: .6rem; }
+.calib-out { margin-top: .6rem; font-family: ui-monospace, Menlo, Consolas, monospace; overflow-wrap: anywhere; }

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>TeamBuilding – Enquête dans Nancy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ============ EN-TÊTE ============ -->
+  <header class="topbar">
+    <div class="brand">
+      <h1>TeamBuilding</h1>
+      <p id="teamLabel">Enquête dans les rues de Nancy</p>
+    </div>
+    <div class="progress" role="group" aria-label="Progression de l'enquête">
+      <span id="progressText" class="progress-text">0 / 0 étapes</span>
+      <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+    </div>
+  </header>
+
+  <main class="layout">
+
+    <!-- ============ CARTE ============ -->
+    <section class="map-panel" aria-labelledby="mapTitle">
+      <h2 id="mapTitle" class="visually-hidden">Plan schématique de Nancy</h2>
+      <div class="map-frame">
+        <svg id="map" viewBox="0 0 640 800" role="img"
+             aria-label="Plan simplifié de Nancy avec les lieux de l'enquête déjà découverts"></svg>
+        <button id="locateBtn" class="btn-map" type="button">Me localiser</button>
+        <p id="gpsStatus" class="gps-status" aria-live="polite">Position non activée</p>
+      </div>
+      <p class="map-note">Plan schématique, non à l'échelle. Un nouveau lieu apparaît dès qu'un indice est débloqué.</p>
+    </section>
+
+    <!-- ============ COLONNE DROITE ============ -->
+    <div class="side">
+
+      <!-- Étape avec photo -->
+      <article id="mission" class="mission" aria-live="polite">
+        <p id="missionStep" class="mission-step">Étape 1</p>
+        <h2 id="missionTitle" class="mission-title">Prochaine étape</h2>
+        <p id="missionHint" class="mission-hint"></p>
+        <p id="distance" class="distance" aria-live="polite"></p>
+
+        <div class="capture">
+          <label for="photoInput" class="btn btn-primary" id="photoLabel">Prendre la photo</label>
+          <input id="photoInput" class="visually-hidden" type="file" accept="image/*" capture="environment">
+
+          <figure id="previewWrap" class="preview" hidden>
+            <img id="previewImg" alt="Aperçu de la photo prise">
+            <figcaption>Photo prête à être envoyée</figcaption>
+          </figure>
+
+          <button id="submitBtn" class="btn btn-gold" type="button" disabled>Envoyer la photo et débloquer l'indice</button>
+          <p id="feedback" class="feedback" role="status"></p>
+        </div>
+      </article>
+
+      <!-- Étape quiz -->
+      <article id="quizCard" class="mission" hidden>
+        <p id="quizStep" class="mission-step">Quiz</p>
+        <h2 id="quizTitle" class="mission-title">Le quiz</h2>
+        <p id="quizHint" class="mission-hint"></p>
+        <form id="quizForm" class="quiz-form" novalidate>
+          <div id="quizQuestions"></div>
+          <button id="quizSubmit" class="btn btn-gold" type="submit">Valider mes réponses</button>
+          <p id="quizFeedback" class="feedback" role="status"></p>
+        </form>
+      </article>
+
+      <!-- Fin du jeu -->
+      <article id="finale" class="mission finale" hidden>
+        <p class="mission-step">Enquête terminée</p>
+        <h2 class="mission-title" id="finaleTitle"></h2>
+        <p class="mission-hint" id="finaleText"></p>
+      </article>
+
+      <!-- Carnet d'enquête -->
+      <section class="notebook" aria-labelledby="notebookTitle">
+        <h2 id="notebookTitle">Carnet d'enquête</h2>
+        <ol id="clueList" class="clue-list"></ol>
+      </section>
+
+      <!-- Outil organisateur : relever les coordonnées GPS d'un lieu (?calibrer=1) -->
+      <section id="calib" class="calib" hidden>
+        <h2>Relevé GPS (organisateur)</h2>
+        <p>Placez-vous devant le lieu, puis relevez la position et copiez-la dans <code>script.js</code>.</p>
+        <button id="calibBtn" class="btn btn-primary" type="button">Relever ma position</button>
+        <p id="calibOut" class="calib-out" aria-live="polite"></p>
+      </section>
+
+      <footer class="foot">
+        <span id="testBadge" class="badge" hidden>Mode test : GPS ignoré</span>
+        <button id="resetBtn" class="link-btn" type="button">Recommencer l'enquête</button>
+      </footer>
+    </div>
+  </main>
+
+  <!-- ============ ÉCRAN D'ACCUEIL ============ -->
+  <dialog id="introDialog" class="dialog">
+    <form method="dialog" id="introForm">
+      <h2>TeamBuilding</h2>
+      <p class="lead">Un crime a été commis à Nancy, il y a bien longtemps. On ne sait ni qui est la victime, ni qui l'a tuée.</p>
+      <p>Parcourez la ville, photographiez chaque lieu pour débloquer vos indices, puis retrouvez-vous au musée des Beaux-Arts pour comparer vos découvertes.</p>
+
+      <fieldset class="suspects team-choice">
+        <legend class="field-label">Votre équipe</legend>
+        <label class="suspect">
+          <input type="radio" name="team" value="1" required>
+          <span><strong>Équipe 1</strong></span>
+        </label>
+        <label class="suspect">
+          <input type="radio" name="team" value="2" required>
+          <span><strong>Équipe 2</strong></span>
+        </label>
+      </fieldset>
+
+      <label for="teamName" class="field-label">Nom de votre équipe</label>
+      <input id="teamName" name="teamName" type="text" maxlength="40" required autocomplete="off" placeholder="Les Détectives">
+      <button type="submit" class="btn btn-gold">Commencer l'enquête</button>
+    </form>
+  </dialog>
+
+  <!-- ============ INDICE DÉBLOQUÉ ============ -->
+  <dialog id="clueDialog" class="dialog dialog-clue">
+    <form method="dialog">
+      <p id="clueDialogKicker" class="mission-step">Indice débloqué</p>
+      <h2 id="clueDialogTitle"></h2>
+      <div id="clueDialogBody" class="clue-body"></div>
+      <p id="clueDialogNext" class="next-hint"></p>
+      <button class="btn btn-gold" value="ok">Noter dans le carnet</button>
+    </form>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
